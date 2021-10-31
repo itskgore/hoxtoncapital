@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hoxtoncapital/providers/main-pro.dart';
 import 'package:hoxtoncapital/providers/saved-cards-pro.dart';
 import 'package:hoxtoncapital/utils/app_colors.dart';
@@ -7,6 +8,9 @@ import 'screens/home-screen/home-screen.dart';
 
 void main() {
   runApp(MyApp());
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
 }
 
 class MyApp extends StatelessWidget {
