@@ -1,0 +1,290 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_echarts/flutter_echarts.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:jiffy/jiffy.dart';
+import 'package:wedge/core/config/app_config.dart';
+import 'package:wedge/core/contants/string_contants.dart';
+import 'package:wedge/core/contants/theme_contants.dart';
+import 'package:wedge/features/assets/pension_investment/pension_investments_main/presentation/widgets/theme_echarts.dart';
+
+import '../../../../../../core/widgets/shimmer_container.dart';
+
+class CashAccountBarChart extends StatefulWidget {
+  final List data;
+  final String currency;
+
+  const CashAccountBarChart(
+      {Key? key, required this.data, required this.currency})
+      : super(key: key);
+
+  @override
+  State<CashAccountBarChart> createState() => _CashAccountBarChartState();
+}
+
+class _CashAccountBarChartState extends State<CashAccountBarChart> {
+  AppLocalizations? translate;
+  dynamic _webController;
+
+  bool chartLoaded = false;
+
+  changeLoadingState(bool val) {
+    setState(() {
+      chartLoaded = val;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    translate = translateStrings(context);
+    var newData = widget.data;
+    return widget.data.isEmpty
+        ? Container()
+        : Container(
+            color: kBackgroundColor,
+            child: Stack(
+              children: [
+                Echarts(
+                    reloadAfterInit: true,
+                    onLoad: (_) {
+                      if (_webController == null) {
+                        _webController = _;
+                        _.reload();
+                      }
+                      changeLoadingState(true);
+                    },
+                    onWebResourceError: (_, e) {},
+                    theme: 'dark',
+                    extensions: [darkThemeScript],
+                    extraScript: '''
+                            chart.on('click', (params) => {
+                              if(params.componentType === 'series') {
+                                Messager.postMessage(JSON.stringify({
+                                  type: 'select',
+                                  payload: params.dataIndex,
+                                }));
+                              }
+                            });
+                          ''',
+                    option: '''
+
+            {
+     dataZoom: [
+          {
+              show: false,
+              start: 94,
+              end: 0
+          },
+          {
+              type: 'inside',
+              start: 94,
+              end: 0
+          },
+       
+    ],
+     tooltip: {
+              trigger: "axis",
+                formatter:(params) => {
+                                return `
+                                <div> 
+                                <svg height="8" width="8" class="inline"><circle cx="4" cy="4" r="4" fill="#6AAC89"/></svg> <b> ` +'${widget.currency} ' +  params[0].value.toLocaleString('en-US', { currency: '${widget.currency}' }) +  `</b>
+                                </div>
+                                <div> 
+                                <svg height="8" width="8" class="inline"><circle cx="4" cy="4" r="4" fill="#E47A77"/></svg> <b> `+ '${widget.currency} ' + params[1].value.toLocaleString('en-US', { currency: '${widget.currency}' }) +  `</b>
+                                <br>
+                                `+ params[0].name+`
+                                </div>`
+                      },
+              },
+      grid: {
+          left: '1%',
+          right: '2%',
+          bottom: '12%',
+          height: '78%',
+          containLabel: true,
+      },
+      xAxis: {
+          type: 'category',
+          axisTick: { show: true },
+          data: ${jsonEncode(getLast6Montths())},
+          axisLabel: { 
+           color: "#${darken(appThemeColors!.disableText!, .0).value.toRadixString(16).substring(2, 8)}",
+           formatter: function xFormatter(value, index) {
+                                return  value.substring(0,3);
+                                },
+               },
+      },
+      yAxis: {
+          type: 'value',
+         min: function (value) {
+            return value.min - (value.min < 0 ? ((value.min * -1) * 0.05) : ((value.min) * 0.05));
+          },
+          max: function (value) {
+            return value.max + (value.max * 0.05);
+          },
+       axisLabel: {
+            color: "#${darken(appThemeColors!.disableText!, .0).value.toRadixString(16).substring(2, 8)}",
+            formatter: function xFormatter(value, index) {
+                                return  Math.abs(value) > 999 ? Math.sign(value)*((Math.abs(value)/1000).toFixed(1)) + 'k' : Math.sign(value)*Math.abs(value)
+                                  
+                                }
+          },
+      },
+      series: [
+          {
+            name: 'Inflows',
+            type: 'bar',
+            barGap: 0,
+            emphasis: {
+              focus: 'series',
+            },
+            itemStyle: { color: '#6AAC89' },
+            data: ${jsonEncode(getInflows())},
+          },
+          {
+            name: 'Outflows',
+            type: 'bar',
+            barGap: 0,
+            emphasis: {
+              focus: 'series',
+            },
+            itemStyle: { color: '#E47A77' },
+            data: ${jsonEncode(getOutflows())},
+          }
+      ]
+    }
+
+'''),
+                chartLoaded
+                    ? Container()
+                    : CustomShimmerContainer(
+                        height: MediaQuery.of(context).size.height * .3)
+              ],
+            ),
+          );
+  }
+
+  List<DateTime> getMonthsInYear() {
+    final dates = <DateTime>[];
+    DateTime date = DateTime.now().subtract(const Duration(days: 152));
+    final sixMonthFromNow = DateTime(date.year, date.month + 6);
+
+    while (date.isBefore(sixMonthFromNow)) {
+      dates.add(date);
+      date = DateTime(date.year, date.month + 1);
+    }
+    return dates;
+  }
+
+  List<int> datesNum = [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ];
+
+  int index = 0;
+
+  dynamic dataDummy;
+
+  manipulateData() {
+    manipulatedData.clear();
+
+    index = 0;
+    if (widget.data.isNotEmpty) {
+      for (var e in widget.data) {
+        if (e[0] != "date") {
+          DateTime ww =
+              DateTime.fromMillisecondsSinceEpoch(e[0] * 1000).toLocal();
+          if (ww.isAfter(Jiffy.now().subtract(months: 5).dateTime)) {
+            manipulatedData.add([e[0], e[1], e[2]]);
+          }
+        }
+      }
+    }
+
+    return manipulatedData;
+  }
+
+  List manipulatedData = [];
+
+  List<String> getLast6Montths() {
+    final dates = <String>[];
+    manipulateData().forEach((element) {
+      DateTime date =
+          DateTime.fromMillisecondsSinceEpoch(element[0] * 1000).toUtc();
+      if (date.month == 1) {
+        dates.add(dateFormatter10.format(date));
+      } else if (date.month == 2) {
+        dates.add(dateFormatter10.format(date));
+      } else if (date.month == 3) {
+        dates.add(dateFormatter10.format(date));
+      } else if (date.month == 4) {
+        dates.add(dateFormatter10.format(date));
+      } else if (date.month == 5) {
+        dates.add(dateFormatter10.format(date));
+      } else if (date.month == 6) {
+        dates.add(dateFormatter10.format(date));
+      } else if (date.month == 7) {
+        dates.add(dateFormatter10.format(date));
+      } else if (date.month == 8) {
+        dates.add(dateFormatter10.format(date));
+      } else if (date.month == 9) {
+        dates.add(dateFormatter10.format(date));
+      } else if (date.month == 10) {
+        dates.add(dateFormatter10.format(date));
+      } else if (date.month == 11) {
+        dates.add(dateFormatter10.format(date));
+      } else if (date.month == 12) {
+        dates.add(dateFormatter10.format(date));
+      }
+    });
+    return dates;
+  }
+
+  List<num> getInflows() {
+    List<num> value = [];
+    manipulateData().forEach((element) {
+      value.add(element[1]);
+    });
+
+    return value;
+  }
+
+  List<num> getOutflows() {
+    List<num> value = [];
+    manipulateData().forEach((element) {
+      value.add(element[2]);
+    });
+
+    return value;
+  }
+}

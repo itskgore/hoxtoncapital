@@ -1,0 +1,36 @@
+[
+  {
+    "folder": "POI",
+    "name": "Proof of Identity (POI)",
+    "description": "Passport OR Country of residence ID card (front & back)",
+    "documentType": [
+      "Passport",
+      "Country of residence ID card",
+      "Driving License"
+    ]
+  },
+  {
+    "folder": "POA",
+    "name": "Proof of Address (POA)",
+    "description": "Tenancy Contract, Utility Bill OR Bank Statement",
+    "documentType": ["Tenancy Contract", "Utility Bill", "Bank Statement"]
+  },
+  {
+    "folder": "Marriage Certificate",
+    "name": "Marriage Certificate",
+    "description": "",
+    "documentType": ["Marriage Certificate"]
+  },
+  {
+    "folder": "Birth Certificate",
+    "name": "Birth Certificate",
+    "description": "",
+    "documentType": ["Birth Certificate"]
+  },
+  {
+    "folder": "Other Documents",
+    "name": "Other Documents",
+    "description": "",
+    "documentType": ["Other Documents"]
+  }
+]

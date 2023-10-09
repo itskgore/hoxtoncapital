@@ -1,33 +1,22 @@
+import 'package:amplitude_flutter/amplitude.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hoxtoncapital/providers/main-pro.dart';
-import 'package:hoxtoncapital/providers/saved-cards-pro.dart';
-import 'package:hoxtoncapital/utils/app_colors.dart';
-import 'package:provider/provider.dart';
-import 'screens/home-screen/home-screen.dart';
+import 'package:wedge/app.dart';
+import 'package:wedge/core/config/enviroment_config.dart';
 
-void main() {
-  runApp(MyApp());
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
-}
+import 'core/config/company_config.dart';
+import 'core/config/notification_config.dart';
+import 'dependency_injection.dart';
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: MainProvider()),
-        ChangeNotifierProvider.value(value: SavedCardsProvider()),
-      ],
-      child: MaterialApp(
-        title: 'Huxton Capital',
-        debugShowCheckedModeBanner: false,
-        theme: lightTheme,
-        home: HomeScreen(),
-      ),
-    );
-  }
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await setupServicesLocator();
+  await Firebase.initializeApp();
+  setCompany(HoxtonCapital());
+  setUpEnvironment(ProdEnviroment());
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  initFirebaseMessaging();
+  Amplitude.getInstance().init("b3895c7a7ef3a01a231f3009bba62365");
+  runApp(const App());
 }

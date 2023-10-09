@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "164440615692",
+    "project_id": "hoxton-stage",
+    "storage_bucket": "hoxton-stage.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:164440615692:android:3f5dbe68ca9c37cafe3729",
+        "android_client_info": {
+          "package_name": "com.hoxtoncapital.hoxtoncapital"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "164440615692-3tip5ljinkbf0spuj3cmmt3j9vj3honc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0_Ci1jPec-e48VhfYxkidQe2-VZxwrgU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "164440615692-3tip5ljinkbf0spuj3cmmt3j9vj3honc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "164440615692-o9shsme9behbnjrim3o4jemk3mc599nb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hoxtoncapital.clientportal"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

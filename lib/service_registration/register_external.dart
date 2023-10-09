@@ -1,0 +1,5 @@
+class RegisterExternal {
+  RegisterExternal() {
+    //external
+  }
+}
